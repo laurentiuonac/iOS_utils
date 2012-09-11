@@ -15,6 +15,7 @@
 		CCC6C43715FF4A6900FB2D0F /* OLAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CCC6C43615FF4A6900FB2D0F /* OLAppDelegate.m */; };
 		CCC6C43A15FF4A6900FB2D0F /* OLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CCC6C43915FF4A6900FB2D0F /* OLViewController.m */; };
 		CCC6C43D15FF4A6900FB2D0F /* OLViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = CCC6C43B15FF4A6900FB2D0F /* OLViewController.xib */; };
+		CCC6C45115FF57BC00FB2D0F /* OLGalleryView.m in Sources */ = {isa = PBXBuildFile; fileRef = CCC6C45015FF57BC00FB2D0F /* OLGalleryView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,8 @@
 		CCC6C43815FF4A6900FB2D0F /* OLViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OLViewController.h; sourceTree = "<group>"; };
 		CCC6C43915FF4A6900FB2D0F /* OLViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OLViewController.m; sourceTree = "<group>"; };
 		CCC6C43C15FF4A6900FB2D0F /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/OLViewController.xib; sourceTree = "<group>"; };
+		CCC6C44F15FF57BC00FB2D0F /* OLGalleryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OLGalleryView.h; sourceTree = "<group>"; };
+		CCC6C45015FF57BC00FB2D0F /* OLGalleryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OLGalleryView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,11 +80,8 @@
 		CCC6C42C15FF4A6800FB2D0F /* PhotoGallery */ = {
 			isa = PBXGroup;
 			children = (
-				CCC6C43515FF4A6900FB2D0F /* OLAppDelegate.h */,
-				CCC6C43615FF4A6900FB2D0F /* OLAppDelegate.m */,
-				CCC6C43815FF4A6900FB2D0F /* OLViewController.h */,
-				CCC6C43915FF4A6900FB2D0F /* OLViewController.m */,
-				CCC6C43B15FF4A6900FB2D0F /* OLViewController.xib */,
+				CCC6C44D15FF552200FB2D0F /* Classes */,
+				CCC6C44B15FF551200FB2D0F /* Resources */,
 				CCC6C42D15FF4A6800FB2D0F /* Supporting Files */,
 			);
 			path = PhotoGallery;
@@ -96,6 +96,51 @@
 				CCC6C43415FF4A6900FB2D0F /* PhotoGallery-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		CCC6C44A15FF550600FB2D0F /* Root */ = {
+			isa = PBXGroup;
+			children = (
+				CCC6C43815FF4A6900FB2D0F /* OLViewController.h */,
+				CCC6C43915FF4A6900FB2D0F /* OLViewController.m */,
+			);
+			name = Root;
+			sourceTree = "<group>";
+		};
+		CCC6C44B15FF551200FB2D0F /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				CCC6C44C15FF551700FB2D0F /* Xib */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		CCC6C44C15FF551700FB2D0F /* Xib */ = {
+			isa = PBXGroup;
+			children = (
+				CCC6C43B15FF4A6900FB2D0F /* OLViewController.xib */,
+			);
+			name = Xib;
+			sourceTree = "<group>";
+		};
+		CCC6C44D15FF552200FB2D0F /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				CCC6C44E15FF552800FB2D0F /* Gallery */,
+				CCC6C44A15FF550600FB2D0F /* Root */,
+				CCC6C43515FF4A6900FB2D0F /* OLAppDelegate.h */,
+				CCC6C43615FF4A6900FB2D0F /* OLAppDelegate.m */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		CCC6C44E15FF552800FB2D0F /* Gallery */ = {
+			isa = PBXGroup;
+			children = (
+				CCC6C44F15FF57BC00FB2D0F /* OLGalleryView.h */,
+				CCC6C45015FF57BC00FB2D0F /* OLGalleryView.m */,
+			);
+			name = Gallery;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -165,6 +210,7 @@
 				CCC6C43315FF4A6900FB2D0F /* main.m in Sources */,
 				CCC6C43715FF4A6900FB2D0F /* OLAppDelegate.m in Sources */,
 				CCC6C43A15FF4A6900FB2D0F /* OLViewController.m in Sources */,
+				CCC6C45115FF57BC00FB2D0F /* OLGalleryView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

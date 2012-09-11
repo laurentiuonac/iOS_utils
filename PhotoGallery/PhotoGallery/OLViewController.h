@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "OLGalleryView.h"
 
-@interface OLViewController : UIViewController
+@interface OLViewController : UIViewController <OLGalleryDelegate>
 
 @end
