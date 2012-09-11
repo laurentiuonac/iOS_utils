@@ -18,6 +18,7 @@
 
 @property (nonatomic, strong) NSMutableArray *visibleViewsArray;
 @property (nonatomic, strong) UIView *scrollHolder;
+@property (nonatomic, strong) UITapGestureRecognizer *tapRecognizer;
 
 @property NSInteger numberOfItems;
 @property NSInteger scrollEnters;
@@ -57,6 +58,11 @@
 {  
   [self setupScrollView];
   
+  self.tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                               action:@selector(didTap:)];
+  [_tapRecognizer setNumberOfTapsRequired:1];
+  [_tapRecognizer setNumberOfTouchesRequired:1];
+  
   _scrollEnters = 0;
   _dontEnter = NO;
 }
@@ -70,16 +76,11 @@
   self.scrollHolder =
   [[UIView alloc] initWithFrame:
    CGRectMake(0, 0, self.contentSize.width, self.contentSize.height)];
-  [_scrollHolder setUserInteractionEnabled:NO];
+  [_scrollHolder setUserInteractionEnabled:YES];
   
   [self addSubview:_scrollHolder];
   [self setShowsHorizontalScrollIndicator:NO];
 }
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark - UIScrollViewDelegate
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,6 +95,22 @@
   
   // Arrange elements
   [self computeViewsFromMinX:minX toMaxX:maxX];
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark - Actions
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)didTap:(id)sender
+{
+  NSInteger index = [sender tag];
+  
+  if ([_galleryDelegate respondsToSelector:@selector(selectedItemAtIndex:)]) {
+    [_galleryDelegate selectedItemAtIndex:index];
+  }
 }
 
 
@@ -180,6 +197,7 @@
   }
   
   [toInsert setFrame:CGRectMake(0, 0, ELEMENT_WIDTH, _scrollHolder.frame.size.height)];
+  [toInsert addGestureRecognizer:_tapRecognizer];
   [_scrollHolder addSubview:toInsert];
   
   return toInsert;

@@ -39,4 +39,9 @@
  */
 - (NSInteger)numberOfItems;
 
+/*
+ * Gives the index of the selected element.
+ */
+- (void)selectedItemAtIndex:(NSInteger)index;
+
 @end
