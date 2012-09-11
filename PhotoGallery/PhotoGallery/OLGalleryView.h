@@ -12,9 +12,9 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-@interface OLGalleryView : UIView <UIScrollViewDelegate>
+@interface OLGalleryView : UIScrollView <UIScrollViewDelegate>
 
-@property (nonatomic, assign) id<OLGalleryDelegate> delegate;
+@property (nonatomic, assign) id<OLGalleryDelegate> galleryDelegate;
 
 /*
  * Init the gallery and set its delegate.

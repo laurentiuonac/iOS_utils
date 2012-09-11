@@ -38,14 +38,14 @@
   self.content = [NSMutableArray array];
   for (int i=0; i<10; i++) {
     UIView *view = [[UIView alloc] init];
-    [view setBackgroundColor:[UIColor colorWithRed:i*10 green:i*25 blue:i*15 alpha:1]];
+    [view setBackgroundColor:[UIColor colorWithRed:i*10/255.0 green:i*25/255.0 blue:i*15/255.0 alpha:1]];
     
     [_content addObject:view];
   }
   
   OLGalleryView *galleryView =
   [[OLGalleryView alloc]
-   initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)
+   initWithFrame:CGRectMake(0, 100, self.view.frame.size.width, 150)
    andDelegate:self];
   [self.view addSubview:galleryView];
 }

@@ -16,12 +16,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 @interface OLGalleryView()
 
-@property (nonatomic, strong) UIScrollView *scrollView;
-@property (nonatomic, strong) UIView *mediaHolder;
 @property (nonatomic, strong) NSMutableArray *visibleViewsArray;
 @property (nonatomic, strong) UIView *scrollHolder;
 
 @property NSInteger numberOfItems;
+@property NSInteger scrollEnters;
+@property BOOL dontEnter;
 
 @end
 
@@ -38,13 +38,13 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-- (id)initWithFrame:(CGRect)frame andDelegate:(id<OLGalleryDelegate>)delegate
+- (id)initWithFrame:(CGRect)frame andDelegate:(id<OLGalleryDelegate>)galleryDelegate
 {
   self = [super initWithFrame:frame];
   
   if (self) {
-    [self setDelegate:delegate];
-    [self initializeHolders];
+    [self setGalleryDelegate:galleryDelegate];
+    [self initializeComponents];
     [self loadData];
   }
   
@@ -53,41 +53,27 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-- (void)initializeHolders
-{
-  NSInteger scrollViewHeight = 150;
-  NSInteger mediaHolderHeight = self.frame.size.height - scrollViewHeight;
-  NSInteger holdersWidth = self.frame.size.width;
-  
-  self.scrollView = [[UIScrollView alloc] init];
-  self.mediaHolder = [[UIView alloc] init];
-  
-  [_scrollView setFrame:CGRectMake(0, mediaHolderHeight, holdersWidth, scrollViewHeight)];
-  [_mediaHolder setFrame:CGRectMake(0, 0, holdersWidth, mediaHolderHeight)];
-  
-  [_mediaHolder setBackgroundColor:[UIColor yellowColor]];
-  [_scrollView setBackgroundColor:[UIColor blueColor]];
-  
+- (void)initializeComponents
+{  
   [self setupScrollView];
   
-  [self addSubview:_mediaHolder];
-  [self addSubview:_scrollView];
+  _scrollEnters = 0;
+  _dontEnter = NO;
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)setupScrollView
 {
-  [_scrollView setContentSize:CGSizeMake(5000, _scrollView.frame.size.height)];
+  [self setContentSize:CGSizeMake(5000, self.frame.size.height)];
   
   self.scrollHolder =
   [[UIView alloc] initWithFrame:
-   CGRectMake(0, 0, _scrollView.contentSize.width, _scrollView.contentSize.height)];
+   CGRectMake(0, 0, self.contentSize.width, self.contentSize.height)];
   [_scrollHolder setUserInteractionEnabled:NO];
   
-  [_scrollView addSubview:_scrollHolder];
-  [_scrollView setShowsHorizontalScrollIndicator:NO];
-  [_scrollView setDelegate:self];
+  [self addSubview:_scrollHolder];
+  [self setShowsHorizontalScrollIndicator:NO];
 }
 
 
@@ -97,8 +83,8 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{ 
+- (void)layoutSubviews
+{  
   [self checkAndRecenterElements];
   
   // tile content in visible bounds
@@ -119,15 +105,13 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)loadData
 {
-  if ([_delegate respondsToSelector:@selector(numberOfItems)]) {
-    _numberOfItems = [_delegate numberOfItems];
+  if ([_galleryDelegate respondsToSelector:@selector(numberOfItems)]) {
+    _numberOfItems = [_galleryDelegate numberOfItems];
   }
   
   if (_numberOfItems != 0) {
     [self initiateViewsArray];
   }
-  
-  [self scrollViewDidScroll:_scrollView];
 }
 
 
@@ -146,13 +130,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)checkAndRecenterElements
 {
-  CGPoint currentOffset = [_scrollView contentOffset];
-  CGFloat contentWidth = [_scrollView contentSize].width;
-  CGFloat centerOffsetX = (contentWidth - [self bounds].size.width) / 2.0;
+  CGPoint currentOffset = self.contentOffset;
+  CGFloat contentWidth = self.contentSize.width;
+  CGFloat centerOffsetX = (contentWidth - self.bounds.size.width) / 2.0;
   CGFloat distanceFromCenter = fabs(currentOffset.x - centerOffsetX);
   
   if (distanceFromCenter > (contentWidth / 4.0)) {
-    _scrollView.contentOffset = CGPointMake(centerOffsetX, currentOffset.y);
+    _dontEnter = YES;
+    self.contentOffset = CGPointMake(centerOffsetX, currentOffset.y);
     
     // move content by the same amount so it appears to stay still
     for (UIView *view in _visibleViewsArray) {
@@ -189,8 +174,8 @@
   UIView *toInsert = nil;
   NSInteger indexToInsert = [self getIndexForDirection:direction];
   
-  if ([_delegate respondsToSelector:@selector(viewForItemAtIndex:)]) {
-    toInsert = [_delegate viewForItemAtIndex:indexToInsert];
+  if ([_galleryDelegate respondsToSelector:@selector(viewForItemAtIndex:)]) {
+    toInsert = [_galleryDelegate viewForItemAtIndex:indexToInsert];
     [toInsert setTag:indexToInsert];
   }
   
@@ -233,7 +218,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)computeViewsFromMinX:(CGFloat)minX toMaxX:(CGFloat)maxX
-{
+{  
   // Add the first element [initial case]
   if ([_visibleViewsArray count] == 0) {
     [self addViewOnRight:minX];
@@ -244,6 +229,7 @@
   CGFloat rightEdge = CGRectGetMaxX([lastView frame]);
   while (rightEdge < maxX) {
     rightEdge = [self addViewOnRight:rightEdge];
+    NSLog(@"Add right: %d", [_visibleViewsArray count]);
   }
   
   // Add elements on the left side
@@ -251,6 +237,7 @@
   CGFloat leftEdge = CGRectGetMinX([firstView frame]);
   while (leftEdge > minX) {
     leftEdge = [self addViewOnLeft:leftEdge];
+    NSLog(@"Add left: %d", [_visibleViewsArray count]);
   }
   
   // Remove hidden elements from the right edge
@@ -259,6 +246,8 @@
     [lastView removeFromSuperview];
     [_visibleViewsArray removeLastObject];
     lastView = [_visibleViewsArray lastObject];
+    
+    NSLog(@"Remove right: %d", [_visibleViewsArray count]);
   }
   
   // Remove hidden elements from the left side
@@ -267,6 +256,8 @@
     [firstView removeFromSuperview];
     [_visibleViewsArray removeObjectAtIndex:0];
     firstView = [_visibleViewsArray objectAtIndex:0];
+    
+    NSLog(@"Remove left: %d", [_visibleViewsArray count]);
   }
 }
 
