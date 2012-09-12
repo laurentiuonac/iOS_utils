@@ -38,7 +38,8 @@
   [[OLGalleryView alloc]
    initWithFrame:CGRectMake(0, 100, self.view.frame.size.width, 150)
    andDelegate:self
-   withProperties:@[@"centerSelectedElement", @"infiniteScroll"]];
+   withProperties:@[@"centerSelectedElement", @"infiniteScroll",
+   @"animateGalleryMovement", @"showSelectedElement"]];
   [self.view addSubview:galleryView];
 }
 

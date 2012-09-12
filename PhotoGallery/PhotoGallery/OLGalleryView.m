@@ -19,6 +19,8 @@
 
 @property (nonatomic, strong) NSMutableArray *visibleViewsArray;
 @property (nonatomic, strong) UIView *scrollHolder;
+@property (nonatomic, strong) NSTimer *animationTimeoutTimer;
+@property (nonatomic, strong) UIView *selectionView;
 
 @property NSInteger numberOfItems;
 @property NSInteger elementSpacing;
@@ -29,8 +31,11 @@
  */
 @property BOOL infiniteScroll;
 @property BOOL centerSelectedElement;
+@property BOOL animateGalleryMovement;
+@property BOOL showSelectedElement;
 
 @property BOOL elementsFit;
+@property BOOL stopAnimation;
 
 @end
 
@@ -68,8 +73,11 @@
 - (void)assignProperties:(NSArray *)propertiesArray
 {
   if (propertiesArray) {
+    _stopAnimation = NO;
     _centerSelectedElement = NO;
     _infiniteScroll = NO;
+    _animateGalleryMovement = NO;
+    _showSelectedElement = NO;
     
     if ([propertiesArray indexOfObject:@"centerSelectedElement"] != NSNotFound) {
       _centerSelectedElement = YES;
@@ -77,6 +85,14 @@
     
     if ([propertiesArray indexOfObject:@"infiniteScroll"] != NSNotFound) {
       _infiniteScroll = YES;
+    }
+    
+    if ([propertiesArray indexOfObject:@"animateGalleryMovement"] != NSNotFound) {
+      _animateGalleryMovement = YES;
+    }
+    
+    if ([propertiesArray indexOfObject:@"showSelectedElement"] != NSNotFound) {
+      _showSelectedElement = YES;
     }
   }
 }
@@ -102,6 +118,11 @@
   [self setShowsHorizontalScrollIndicator:NO];
   [self setCanCancelContentTouches:YES];
   [self setDecelerationRate:UIScrollViewDecelerationRateFast];
+  [self setDelegate:self];
+  
+  if (_infiniteScroll && _animateGalleryMovement) {
+    [self startMovement];
+  }
 }
 
 
@@ -150,7 +171,7 @@
     CGRect visibleBounds = [self convertRect:[self bounds] toView:_scrollHolder];
     CGFloat minX = CGRectGetMinX(visibleBounds);
     CGFloat maxX = CGRectGetMaxX(visibleBounds);
-
+    
     [self computeViewsFromMinX:minX toMaxX:maxX];
     
     if (_elementsFit) {
@@ -180,6 +201,82 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark - Animation
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)startMovement
+{
+  [NSTimer scheduledTimerWithTimeInterval:0.1
+                                   target:self
+                                 selector:@selector(animateMovement:)
+                                 userInfo:nil
+                                  repeats:YES];
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)animateMovement:(id)sender
+{
+  if (!_stopAnimation) {
+    [UIView animateWithDuration:0.1
+                          delay:0
+                        options:UIViewAnimationOptionCurveLinear |
+                                UIViewAnimationOptionAllowUserInteraction |
+                                UIViewAnimationOptionBeginFromCurrentState |
+                                UIViewAnimationOptionOverrideInheritedDuration |
+                                UIViewAnimationOptionOverrideInheritedCurve
+                     animations:^{
+                       CGPoint currentOffset = self.contentOffset;
+                       currentOffset.x += 5;
+                       
+                       [self setContentOffset:currentOffset];
+                     } completion:^(BOOL finished) {
+                       
+                     }];
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark - UIScrollViewDelegate
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+  [self startResetAnimationTimeoutTimer];
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)startResetAnimationTimeoutTimer
+{
+  _stopAnimation = YES;
+  
+  if (_animationTimeoutTimer) {
+    [_animationTimeoutTimer invalidate];
+    
+    self.animationTimeoutTimer = nil;
+  }
+  
+  self.animationTimeoutTimer = [NSTimer scheduledTimerWithTimeInterval:10
+                                                                target:self
+                                                              selector:@selector(enableAnimation:)
+                                                              userInfo:nil
+                                                               repeats:NO];
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)enableAnimation:(id)sender
+{
+  _stopAnimation = NO;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark - Actions
 
 
@@ -190,6 +287,14 @@
   
   if ([_galleryDelegate respondsToSelector:@selector(galleryView:selectedItemAtIndex:)]) {
     [_galleryDelegate galleryView:self selectedItemAtIndex:index];
+  }
+  
+  if (_animateGalleryMovement) {
+    [self startResetAnimationTimeoutTimer];
+  }
+  
+  if (_showSelectedElement) {
+    [self markSelectedElement:sender.view];
   }
   
   // Center selected element
@@ -237,6 +342,23 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)markSelectedElement:(UIView *)view
+{
+  NSInteger startY = view.frame.size.height - 3;
+  
+  if (!_selectionView) {
+    self.selectionView = [[UIView alloc] initWithFrame:
+                         CGRectMake(0, startY, view.frame.size.width, view.frame.size.height)];
+    [_selectionView setBackgroundColor:[UIColor redColor]];
+  } else {
+    [_selectionView removeFromSuperview];
+  }
+  
+  [view addSubview:_selectionView];
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark - Preparing data
 
@@ -262,14 +384,23 @@
   CGFloat distanceFromCenter = fabs(currentOffset.x - centerOffsetX);
   
   if (distanceFromCenter > (contentWidth / 4.0)) {
-    
-    self.contentOffset = CGPointMake(centerOffsetX, currentOffset.y);
-    // move content by the same amount so it appears to stay still
-    for (UIView *view in _visibleViewsArray) {
-      CGPoint center = [_scrollHolder convertPoint:view.center toView:self];
-      center.x += (centerOffsetX - currentOffset.x);
-      view.center = [self convertPoint:center toView:_scrollHolder];
-    }
+    [UIView animateWithDuration:0
+                          delay:0
+                        options:UIViewAnimationOptionTransitionNone |
+                                UIViewAnimationOptionOverrideInheritedDuration |
+                                UIViewAnimationOptionOverrideInheritedCurve |
+                                UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                       self.contentOffset = CGPointMake(centerOffsetX, currentOffset.y);
+                       // move content by the same amount so it appears to stay still
+                       for (UIView *view in _visibleViewsArray) {
+                         CGPoint center = [_scrollHolder convertPoint:view.center toView:self];
+                         center.x += (centerOffsetX - currentOffset.x);
+                         view.center = [self convertPoint:center toView:_scrollHolder];
+                       }
+                     } completion:^(BOOL finished) {
+                       
+                     }];
   }
 }
 
