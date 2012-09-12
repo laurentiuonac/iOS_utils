@@ -39,7 +39,7 @@
    initWithFrame:CGRectMake(0, 100, self.view.frame.size.width, 150)
    andDelegate:self
    withProperties:@[@"centerSelectedElement", @"infiniteScroll",
-   @"animateGalleryMovement", @"showSelectedElement"]];
+   @"animateGalleryMovement", @"showSelectedElement", @"autoSelectElement"]];
   [self.view addSubview:galleryView];
 }
 

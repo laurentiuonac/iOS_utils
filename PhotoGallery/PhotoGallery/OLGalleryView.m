@@ -21,6 +21,7 @@
 @property (nonatomic, strong) UIView *scrollHolder;
 @property (nonatomic, strong) NSTimer *animationTimeoutTimer;
 @property (nonatomic, strong) UIView *selectionView;
+@property (nonatomic, strong) UIView *selectedView;
 
 @property NSInteger numberOfItems;
 @property NSInteger elementSpacing;
@@ -33,6 +34,7 @@
 @property BOOL centerSelectedElement;
 @property BOOL animateGalleryMovement;
 @property BOOL showSelectedElement;
+@property BOOL autoSelectElement;
 
 @property BOOL elementsFit;
 @property BOOL stopAnimation;
@@ -78,6 +80,7 @@
     _infiniteScroll = NO;
     _animateGalleryMovement = NO;
     _showSelectedElement = NO;
+    _autoSelectElement = NO;
     
     if ([propertiesArray indexOfObject:@"centerSelectedElement"] != NSNotFound) {
       _centerSelectedElement = YES;
@@ -93,6 +96,10 @@
     
     if ([propertiesArray indexOfObject:@"showSelectedElement"] != NSNotFound) {
       _showSelectedElement = YES;
+    }
+    
+    if ([propertiesArray indexOfObject:@"autoSelectElement"] != NSNotFound) {
+      _autoSelectElement = YES;
     }
   }
 }
@@ -244,6 +251,36 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+  if (_autoSelectElement) {
+    if (!_stopAnimation) {
+      CGFloat centerX = self.center.x;
+      CGFloat minDifference = 10000;
+      UIView *minView;
+      CGFloat currDifference = 0;
+      
+      for (UIView *view in _visibleViewsArray) {
+        CGRect toCompare = [self convertRect:view.frame toView:self.superview];
+        currDifference = abs(CGRectGetMidX(toCompare) - centerX);
+        
+        if (minDifference > currDifference) {
+          minDifference = currDifference;
+          minView = view;
+        } else {
+          if (_selectedView != minView) {
+            [self markAndNotifyDelegateAboutSelectedElement:minView];
+          }
+          
+          break;
+        }
+      }
+    }
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
   [self startResetAnimationTimeoutTimer];
 }
@@ -281,20 +318,27 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)notifyDelegateAboutSelection:(NSInteger)index
+{
+  if ([_galleryDelegate respondsToSelector:@selector(galleryView:selectedItemAtIndex:)]) {
+    [_galleryDelegate galleryView:self selectedItemAtIndex:index];
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)didTap:(UIGestureRecognizer *)sender
 {
   NSInteger index = sender.view.tag;
   
-  if ([_galleryDelegate respondsToSelector:@selector(galleryView:selectedItemAtIndex:)]) {
-    [_galleryDelegate galleryView:self selectedItemAtIndex:index];
-  }
+  [self notifyDelegateAboutSelection:index];
   
   if (_animateGalleryMovement) {
     [self startResetAnimationTimeoutTimer];
   }
   
   if (_showSelectedElement) {
-    [self markSelectedElement:sender.view];
+    [self markAndNotifyDelegateAboutSelectedElement:sender.view];
   }
   
   // Center selected element
@@ -342,13 +386,20 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-- (void)markSelectedElement:(UIView *)view
+- (void)markAndNotifyDelegateAboutSelectedElement:(UIView *)view
 {
+  NSInteger index = view.tag;
+  [self notifyDelegateAboutSelection:index];
+  
+  if (_selectedView != view) {
+    self.selectedView = view;
+  }
+  
   NSInteger startY = view.frame.size.height - 3;
   
   if (!_selectionView) {
     self.selectionView = [[UIView alloc] initWithFrame:
-                         CGRectMake(0, startY, view.frame.size.width, view.frame.size.height)];
+                         CGRectMake(0, startY, view.frame.size.width, 3)];
     [_selectionView setBackgroundColor:[UIColor redColor]];
   } else {
     [_selectionView removeFromSuperview];
