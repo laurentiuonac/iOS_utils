@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "-[OLViewController buttonPressed:]:OLViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[OLGalleryView computeViewsFromMinX:toMaxX:]:OLGalleryView.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "">
+            </PersistentString>
+            <PersistentString
+               value = "lastView.frame.origin.x">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
