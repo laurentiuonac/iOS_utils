@@ -329,10 +329,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)didTap:(UIGestureRecognizer *)sender
 {
-  NSInteger index = sender.view.tag;
-  
-  [self notifyDelegateAboutSelection:index];
-  
   if (_animateGalleryMovement) {
     [self startResetAnimationTimeoutTimer];
   }
