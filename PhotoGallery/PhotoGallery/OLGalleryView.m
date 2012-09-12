@@ -7,9 +7,9 @@
 //
 
 #import "OLGalleryView.h"
+#import "OLConstants.h"
 
-#define ELEMENT_WIDTH 266
-
+#define INIT_ELEMENT_WIDTH 266
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22,12 +22,15 @@
 
 @property NSInteger numberOfItems;
 @property NSInteger elementSpacing;
+@property NSInteger elementWidth;
 
 /*
  * Gallery properties
  */
 @property BOOL infiniteScroll;
-@property BOOL shouldCenterSelectedElement;
+@property BOOL centerSelectedElement;
+
+@property BOOL elementsFit;
 
 @end
 
@@ -53,8 +56,8 @@
   if (self) {
     [self assignProperties:propertiesArray];
     [self setGalleryDelegate:galleryDelegate];
-    [self initializeComponents];
-    [self loadData];
+    [self loadElementData];
+    [self setupScrollView];
   }
   
   return self;
@@ -62,21 +65,14 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-- (void)initializeComponents
-{  
-  [self setupScrollView];
-}
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)assignProperties:(NSArray *)propertiesArray
 {
   if (propertiesArray) {
-    _shouldCenterSelectedElement = NO;
+    _centerSelectedElement = NO;
     _infiniteScroll = NO;
     
-    if ([propertiesArray indexOfObject:@"shouldCenterSelectedElement"] != NSNotFound) {
-      _shouldCenterSelectedElement = YES;
+    if ([propertiesArray indexOfObject:@"centerSelectedElement"] != NSNotFound) {
+      _centerSelectedElement = YES;
     }
     
     if ([propertiesArray indexOfObject:@"infiniteScroll"] != NSNotFound) {
@@ -89,7 +85,13 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)setupScrollView
 {
-  [self setContentSize:CGSizeMake(5000, self.frame.size.height)];
+  NSInteger contentWidth = 5000;
+  
+  if (!_infiniteScroll) {
+     contentWidth = _numberOfItems * _elementWidth + (_numberOfItems + 1) * _elementSpacing;
+  }
+  
+  [self setContentSize:CGSizeMake(contentWidth, self.frame.size.height)];
   
   self.scrollHolder =
   [[UIView alloc] initWithFrame:
@@ -104,17 +106,75 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)loadElementData
+{
+  _numberOfItems = 0;
+  _elementSpacing = 0;
+  _elementsFit = NO;
+  _elementWidth = INIT_ELEMENT_WIDTH;
+  
+  if ([_galleryDelegate respondsToSelector:@selector(numberOfItemsForGalleryView:)]) {
+    _numberOfItems = [_galleryDelegate numberOfItemsForGalleryView:self];
+  }
+  
+  if ([_galleryDelegate respondsToSelector:@selector(elementSpacingForGalleryView:)]) {
+    _elementSpacing = [_galleryDelegate elementSpacingForGalleryView:self];
+  }
+  
+  if ([_galleryDelegate respondsToSelector:@selector(elementWidthForGalleryView:)]) {
+    _elementWidth = [_galleryDelegate elementWidthForGalleryView:self];
+  }
+  
+  if (!_infiniteScroll) {
+    NSInteger totalSize = _numberOfItems * _elementWidth + (_numberOfItems + 1) * _elementSpacing;
+    if (totalSize <= self.frame.size.width) {
+      _elementsFit = YES;
+    }
+  }
+  
+  if (_numberOfItems != 0) {
+    [self initiateViewsArray];
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)layoutSubviews
-{  
-  [self checkAndRecenterElements];
+{
+  if (_numberOfItems != 0) {
+    if (_infiniteScroll) {
+      [self checkAndRecenterElements];
+    }
+    
+    // Arrange content in visible bounds
+    CGRect visibleBounds = [self convertRect:[self bounds] toView:_scrollHolder];
+    CGFloat minX = CGRectGetMinX(visibleBounds);
+    CGFloat maxX = CGRectGetMaxX(visibleBounds);
+
+    [self computeViewsFromMinX:minX toMaxX:maxX];
+    
+    if (_elementsFit) {
+      [self centerElementsAndDisableScrolling];
+    }
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)centerElementsAndDisableScrolling
+{
+  UIView *subView = [self.subviews objectAtIndex:0];
   
-  // tile content in visible bounds
-  CGRect visibleBounds = [self convertRect:[self bounds] toView:_scrollHolder];
-  CGFloat minX = CGRectGetMinX(visibleBounds);
-  CGFloat maxX = CGRectGetMaxX(visibleBounds);
+  CGFloat offsetX = (self.bounds.size.width > self.contentSize.width)?
+  (self.bounds.size.width - self.contentSize.width) * 0.5 : 0.0;
   
-  // Arrange elements
-  [self computeViewsFromMinX:minX toMaxX:maxX];
+  CGFloat offsetY = (self.bounds.size.height > self.contentSize.height)?
+  (self.bounds.size.height - self.contentSize.height) * 0.5 : 0.0;
+  
+  subView.center = CGPointMake(self.contentSize.width * 0.5 + offsetX,
+                               self.contentSize.height * 0.5 + offsetY);
+  
+  [self setScrollEnabled:NO];
 }
 
 
@@ -133,13 +193,45 @@
   }
   
   // Center selected element
-  if (_shouldCenterSelectedElement) {
-    //TODO: Change
-    CGRect viewFrame = [self convertRect:[sender.view frame] toView:self.superview];
-    CGFloat centerX = CGRectGetMidX(viewFrame);
-    CGPoint currentOffset = self.contentOffset;
-    currentOffset.x -= self.center.x - centerX;
-    [self setContentOffset:currentOffset animated:YES];
+  if (_centerSelectedElement) {
+    // Required number of elements to scroll in one direction
+    NSInteger reqNumberOfElements = floor((self.frame.size.width / 2) / _elementWidth + 0.5);
+    
+    // Check if there are enough elements on the right side
+    if (!_infiniteScroll && sender.view.tag + 1 + reqNumberOfElements > _numberOfItems) {
+      NSInteger remainingElementsRight = _numberOfItems - (sender.view.tag + 1);
+      NSInteger remainingSizeRight = remainingElementsRight * _elementWidth +
+      _elementWidth / 2 + _elementSpacing * (remainingElementsRight + 1);
+      
+      NSInteger objectX = CGRectGetMidX(sender.view.frame) + remainingSizeRight - _elementWidth;
+      NSInteger objectY = 0;
+      
+      CGRect lastObject = CGRectMake(objectX, objectY, _elementWidth, self.frame.size.height);
+      
+      [self scrollRectToVisible:lastObject animated:YES];
+
+      // Or in the left side
+    } else if (!_infiniteScroll && sender.view.tag + 1 - reqNumberOfElements <= 0) {
+      NSInteger remainingElementsLeft = sender.view.tag;
+      NSInteger remainingSizeLeft = remainingElementsLeft * _elementWidth +
+      _elementWidth / 2 + _elementSpacing * (remainingElementsLeft + 1);
+
+      NSInteger objectX = CGRectGetMidX(sender.view.frame) - remainingSizeLeft;
+      NSInteger objectY = 0;
+      
+      CGRect lastObject = CGRectMake(objectX, objectY, _elementWidth, self.frame.size.height);
+      
+      [self scrollRectToVisible:lastObject animated:YES];
+      
+      // Or perform the regular centering
+    } else {
+      CGRect viewFrame = [self convertRect:sender.view.frame toView:self.superview];
+      CGFloat centerX = CGRectGetMidX(viewFrame);
+      CGPoint currentOffset = self.contentOffset;
+      currentOffset.x -= self.center.x - centerX;
+      
+      [self setContentOffset:currentOffset animated:YES];
+    }
   }
 }
 
@@ -147,26 +239,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark - Preparing data
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-- (void)loadData
-{
-  _numberOfItems = 0;
-  _elementSpacing = 0;
-  
-  if ([_galleryDelegate respondsToSelector:@selector(numberOfItemsforGalleryView:)]) {
-    _numberOfItems = [_galleryDelegate numberOfItemsforGalleryView:self];
-  }
-  
-  if ([_galleryDelegate respondsToSelector:@selector(elementSpacingforGalleryView:)]) {
-    _elementSpacing = [_galleryDelegate elementSpacingforGalleryView:self];
-  }
-  
-  if (_numberOfItems != 0) {
-    [self initiateViewsArray];
-  }
-}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -238,7 +310,7 @@
   [tapRecognizer setNumberOfTapsRequired:1];
   [tapRecognizer setNumberOfTouchesRequired:1];
   
-  [toInsert setFrame:CGRectMake(0, 0, ELEMENT_WIDTH, _scrollHolder.frame.size.height)];
+  [toInsert setFrame:CGRectMake(0, 0, _elementWidth, _scrollHolder.frame.size.height)];
   [toInsert addGestureRecognizer:tapRecognizer];
   [toInsert setUserInteractionEnabled:YES];
   [_scrollHolder addSubview:toInsert];
@@ -289,16 +361,28 @@
   UIView *lastView = [_visibleViewsArray lastObject];
   CGFloat rightEdge = CGRectGetMaxX([lastView frame]);
   while (rightEdge < maxX) {
+    if (!_infiniteScroll) {
+      if ([_visibleViewsArray count] == _numberOfItems || lastView.tag == _numberOfItems - 1) {
+        break;
+      }
+    }
+    
     rightEdge = [self addViewOnRight:rightEdge];
-    NSLog(@"Add right: %d", [_visibleViewsArray count]);
+    DLog(@"Add right: %d", [_visibleViewsArray count]);
   }
   
   // Add elements on the left side
   UIView *firstView = [_visibleViewsArray objectAtIndex:0];
   CGFloat leftEdge = CGRectGetMinX([firstView frame]);
   while (leftEdge > minX) {
+    if (!_infiniteScroll) {
+      if ([_visibleViewsArray count] == _numberOfItems || firstView.tag == 0) {
+        break;
+      }
+    }
+    
     leftEdge = [self addViewOnLeft:leftEdge];
-    NSLog(@"Add left: %d", [_visibleViewsArray count]);
+    DLog(@"Add left: %d", [_visibleViewsArray count]);
   }
   
   // Remove hidden elements from the right edge
@@ -308,7 +392,7 @@
     [_visibleViewsArray removeLastObject];
     lastView = [_visibleViewsArray lastObject];
     
-    NSLog(@"Remove right: %d", [_visibleViewsArray count]);
+    DLog(@"Remove right: %d", [_visibleViewsArray count]);
   }
   
   // Remove hidden elements from the left side
@@ -318,7 +402,7 @@
     [_visibleViewsArray removeObjectAtIndex:0];
     firstView = [_visibleViewsArray objectAtIndex:0];
     
-    NSLog(@"Remove left: %d", [_visibleViewsArray count]);
+    DLog(@"Remove left: %d", [_visibleViewsArray count]);
   }
 }
 

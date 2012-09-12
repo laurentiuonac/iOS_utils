@@ -7,6 +7,7 @@
 //
 
 #import "OLViewController.h"
+#import "OLConstants.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +38,7 @@
   [[OLGalleryView alloc]
    initWithFrame:CGRectMake(0, 100, self.view.frame.size.width, 150)
    andDelegate:self
-   withProperties:@[@"shouldCenterSelectedElement"]];
+   withProperties:@[@"centerSelectedElement", @"infiniteScroll"]];
   [self.view addSubview:galleryView];
 }
 
@@ -63,16 +64,23 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-- (NSInteger)elementSpacingforGalleryView:(OLGalleryView *)galleryView
+- (NSInteger)elementSpacingForGalleryView:(OLGalleryView *)galleryView
 {
   return 2;
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-- (NSInteger)numberOfItemsforGalleryView:(OLGalleryView *)galleryView
+- (NSInteger)numberOfItemsForGalleryView:(OLGalleryView *)galleryView
 {
   return 10;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- (NSInteger)elementWidthForGalleryView:(OLGalleryView *)galleryView
+{
+  return 300;
 }
 
 
@@ -81,7 +89,7 @@
 {
   UIView *view = [[UIView alloc] init];
   [view setBackgroundColor:[UIColor colorWithRed:index*10/255.0
-                                           green:index*25/255.0
+                                           green:index*15/255.0
                                             blue:index*15/255.0
                                            alpha:1]];
   
@@ -92,7 +100,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)galleryView:(OLGalleryView *)galleryView selectedItemAtIndex:(NSInteger)index
 {
-  NSLog(@"Selected item: %d", index);
+  DLog(@"Selected item: %d", index);
 }
 
 

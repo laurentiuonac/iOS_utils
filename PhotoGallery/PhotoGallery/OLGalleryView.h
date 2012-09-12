@@ -40,12 +40,7 @@
 /*
  * Total number of items.
  */
-- (NSInteger)numberOfItemsforGalleryView:(OLGalleryView *)galleryView;
-
-/*
- * Gives the index of the selected element.
- */
-- (void)galleryView:(OLGalleryView *)galleryView selectedItemAtIndex:(NSInteger)index;
+- (NSInteger)numberOfItemsForGalleryView:(OLGalleryView *)galleryView;
 
 
 @optional
@@ -53,6 +48,18 @@
 /*
  * Element spacing.
  */
-- (NSInteger)elementSpacingforGalleryView:(OLGalleryView *)galleryView;
+- (NSInteger)elementSpacingForGalleryView:(OLGalleryView *)galleryView;
+
+/*
+ * Element width.
+ */
+- (NSInteger)elementWidthForGalleryView:(OLGalleryView *)galleryView;
+
+/*
+ * Gives the index of the selected element.
+ */
+- (void)galleryView:(OLGalleryView *)galleryView selectedItemAtIndex:(NSInteger)index;
+
+
 
 @end

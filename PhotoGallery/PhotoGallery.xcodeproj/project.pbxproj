@@ -34,6 +34,7 @@
 		CCC6C43C15FF4A6900FB2D0F /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/OLViewController.xib; sourceTree = "<group>"; };
 		CCC6C44F15FF57BC00FB2D0F /* OLGalleryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OLGalleryView.h; sourceTree = "<group>"; };
 		CCC6C45015FF57BC00FB2D0F /* OLGalleryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OLGalleryView.m; sourceTree = "<group>"; };
+		CCC6C4571600995100FB2D0F /* OLConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OLConstants.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +131,7 @@
 				CCC6C44A15FF550600FB2D0F /* Root */,
 				CCC6C43515FF4A6900FB2D0F /* OLAppDelegate.h */,
 				CCC6C43615FF4A6900FB2D0F /* OLAppDelegate.m */,
+				CCC6C4571600995100FB2D0F /* OLConstants.h */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
