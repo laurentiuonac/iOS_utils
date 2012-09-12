@@ -14,8 +14,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 @interface OLViewController ()
 
-@property (nonatomic, strong) NSMutableArray *content;
-
 @end
 
 
@@ -34,19 +32,12 @@
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-	
-  self.content = [NSMutableArray array];
-  for (int i=0; i<10; i++) {
-    UIView *view = [[UIView alloc] init];
-    [view setBackgroundColor:[UIColor colorWithRed:i*10/255.0 green:i*25/255.0 blue:i*15/255.0 alpha:1]];
-    
-    [_content addObject:view];
-  }
   
   OLGalleryView *galleryView =
   [[OLGalleryView alloc]
    initWithFrame:CGRectMake(0, 100, self.view.frame.size.width, 150)
-   andDelegate:self];
+   andDelegate:self
+   withProperties:@[@"shouldCenterSelectedElement"]];
   [self.view addSubview:galleryView];
 }
 
@@ -72,21 +63,34 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-- (NSInteger)numberOfItems
+- (NSInteger)elementSpacingforGalleryView:(OLGalleryView *)galleryView
 {
-  return [_content count];
+  return 2;
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-- (UIView *)viewForItemAtIndex:(NSInteger)index
+- (NSInteger)numberOfItemsforGalleryView:(OLGalleryView *)galleryView
 {
-  return [_content objectAtIndex:index];
+  return 10;
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-- (void)selectedItemAtIndex:(NSInteger)index
+- (UIView *)galleryView:(OLGalleryView *)galleryView viewForItemAtIndex:(NSInteger)index
+{
+  UIView *view = [[UIView alloc] init];
+  [view setBackgroundColor:[UIColor colorWithRed:index*10/255.0
+                                           green:index*25/255.0
+                                            blue:index*15/255.0
+                                           alpha:1]];
+  
+  return view;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)galleryView:(OLGalleryView *)galleryView selectedItemAtIndex:(NSInteger)index
 {
   NSLog(@"Selected item: %d", index);
 }

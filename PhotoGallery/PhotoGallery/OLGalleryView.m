@@ -8,7 +8,8 @@
 
 #import "OLGalleryView.h"
 
-#define ELEMENT_WIDTH 180
+#define ELEMENT_WIDTH 266
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,8 +21,13 @@
 @property (nonatomic, strong) UIView *scrollHolder;
 
 @property NSInteger numberOfItems;
-@property NSInteger scrollEnters;
-@property BOOL dontEnter;
+@property NSInteger elementSpacing;
+
+/*
+ * Gallery properties
+ */
+@property BOOL infiniteScroll;
+@property BOOL shouldCenterSelectedElement;
 
 @end
 
@@ -38,11 +44,14 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-- (id)initWithFrame:(CGRect)frame andDelegate:(id<OLGalleryDelegate>)galleryDelegate
+- (id)initWithFrame:(CGRect)frame
+        andDelegate:(id<OLGalleryDelegate>)galleryDelegate
+     withProperties:(NSArray *)propertiesArray
 {
   self = [super initWithFrame:frame];
   
   if (self) {
+    [self assignProperties:propertiesArray];
     [self setGalleryDelegate:galleryDelegate];
     [self initializeComponents];
     [self loadData];
@@ -56,9 +65,24 @@
 - (void)initializeComponents
 {  
   [self setupScrollView];
-  
-  _scrollEnters = 0;
-  _dontEnter = NO;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)assignProperties:(NSArray *)propertiesArray
+{
+  if (propertiesArray) {
+    _shouldCenterSelectedElement = NO;
+    _infiniteScroll = NO;
+    
+    if ([propertiesArray indexOfObject:@"shouldCenterSelectedElement"] != NSNotFound) {
+      _shouldCenterSelectedElement = YES;
+    }
+    
+    if ([propertiesArray indexOfObject:@"infiniteScroll"] != NSNotFound) {
+      _infiniteScroll = YES;
+    }
+  }
 }
 
 
@@ -75,6 +99,7 @@
   [self addSubview:_scrollHolder];
   [self setShowsHorizontalScrollIndicator:NO];
   [self setCanCancelContentTouches:YES];
+  [self setDecelerationRate:UIScrollViewDecelerationRateFast];
 }
 
 
@@ -103,8 +128,18 @@
 {
   NSInteger index = sender.view.tag;
   
-  if ([_galleryDelegate respondsToSelector:@selector(selectedItemAtIndex:)]) {
-    [_galleryDelegate selectedItemAtIndex:index];
+  if ([_galleryDelegate respondsToSelector:@selector(galleryView:selectedItemAtIndex:)]) {
+    [_galleryDelegate galleryView:self selectedItemAtIndex:index];
+  }
+  
+  // Center selected element
+  if (_shouldCenterSelectedElement) {
+    //TODO: Change
+    CGRect viewFrame = [self convertRect:[sender.view frame] toView:self.superview];
+    CGFloat centerX = CGRectGetMidX(viewFrame);
+    CGPoint currentOffset = self.contentOffset;
+    currentOffset.x -= self.center.x - centerX;
+    [self setContentOffset:currentOffset animated:YES];
   }
 }
 
@@ -117,8 +152,15 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)loadData
 {
-  if ([_galleryDelegate respondsToSelector:@selector(numberOfItems)]) {
-    _numberOfItems = [_galleryDelegate numberOfItems];
+  _numberOfItems = 0;
+  _elementSpacing = 0;
+  
+  if ([_galleryDelegate respondsToSelector:@selector(numberOfItemsforGalleryView:)]) {
+    _numberOfItems = [_galleryDelegate numberOfItemsforGalleryView:self];
+  }
+  
+  if ([_galleryDelegate respondsToSelector:@selector(elementSpacingforGalleryView:)]) {
+    _elementSpacing = [_galleryDelegate elementSpacingforGalleryView:self];
   }
   
   if (_numberOfItems != 0) {
@@ -148,9 +190,8 @@
   CGFloat distanceFromCenter = fabs(currentOffset.x - centerOffsetX);
   
   if (distanceFromCenter > (contentWidth / 4.0)) {
-    _dontEnter = YES;
-    self.contentOffset = CGPointMake(centerOffsetX, currentOffset.y);
     
+    self.contentOffset = CGPointMake(centerOffsetX, currentOffset.y);
     // move content by the same amount so it appears to stay still
     for (UIView *view in _visibleViewsArray) {
       CGPoint center = [_scrollHolder convertPoint:view.center toView:self];
@@ -186,8 +227,8 @@
   UIView *toInsert = nil;
   NSInteger indexToInsert = [self getIndexForDirection:direction];
   
-  if ([_galleryDelegate respondsToSelector:@selector(viewForItemAtIndex:)]) {
-    toInsert = [_galleryDelegate viewForItemAtIndex:indexToInsert];
+  if ([_galleryDelegate respondsToSelector:@selector(galleryView:viewForItemAtIndex:)]) {
+    toInsert = [_galleryDelegate galleryView:self viewForItemAtIndex:indexToInsert];
     [toInsert setTag:indexToInsert];
   }
   
@@ -213,7 +254,7 @@
   [_visibleViewsArray addObject:insertedView];
   
   CGRect frame = [insertedView frame];
-  frame.origin.x = rightEdge;
+  frame.origin.x = rightEdge + _elementSpacing;
   frame.origin.y = 0;
   [insertedView setFrame:frame];
   
@@ -228,7 +269,7 @@
   [_visibleViewsArray insertObject:insertedView atIndex:0];
   
   CGRect frame = [insertedView frame];
-  frame.origin.x = leftEdge - frame.size.width;
+  frame.origin.x = leftEdge - frame.size.width - _elementSpacing;
   frame.origin.y = 0;
   [insertedView setFrame:frame];
   

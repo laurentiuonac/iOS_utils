@@ -17,9 +17,11 @@
 @property (nonatomic, assign) id<OLGalleryDelegate> galleryDelegate;
 
 /*
- * Init the gallery and set its delegate.
+ * Init the gallery and set its delegate and properties.
  */
-- (id)initWithFrame:(CGRect)frame andDelegate:(id<OLGalleryDelegate>)delegate;
+- (id)initWithFrame:(CGRect)frame
+        andDelegate:(id<OLGalleryDelegate>)galleryDelegate
+     withProperties:(NSArray *)propertiesArray;
 
 @end
 
@@ -27,21 +29,30 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 @protocol OLGalleryDelegate <NSObject>
 
+
 @required
 
 /*
  * The view at the given index.
  */
-- (UIView *)viewForItemAtIndex:(NSInteger)index;
+- (UIView *)galleryView:(OLGalleryView *)galleryView viewForItemAtIndex:(NSInteger)index;
 
 /*
  * Total number of items.
  */
-- (NSInteger)numberOfItems;
+- (NSInteger)numberOfItemsforGalleryView:(OLGalleryView *)galleryView;
 
 /*
  * Gives the index of the selected element.
  */
-- (void)selectedItemAtIndex:(NSInteger)index;
+- (void)galleryView:(OLGalleryView *)galleryView selectedItemAtIndex:(NSInteger)index;
+
+
+@optional
+
+/*
+ * Element spacing.
+ */
+- (NSInteger)elementSpacingforGalleryView:(OLGalleryView *)galleryView;
 
 @end
