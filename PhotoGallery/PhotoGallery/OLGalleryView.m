@@ -11,8 +11,8 @@
 
 #define INIT_ELEMENT_WIDTH 266
 
-#define ANIMATION_DURATION 2
-#define ANIMATION_WIDTH 200
+#define ANIMATION_DURATION 1
+#define ANIMATION_WIDTH 50
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@
   if (propertiesArray) {
     _stopAnimation = NO;
     _ignoreScroll = NO;
-    _timerAnimation = NO;
+    _timerAnimation = YES;
     _centerSelectedElement = NO;
     _infiniteScroll = NO;
     _animateGalleryMovement = NO;
@@ -118,7 +118,7 @@
   NSInteger contentWidth = 5000;
   
   if (!_infiniteScroll) {
-     contentWidth = _numberOfItems * _elementWidth + (_numberOfItems + 1) * _elementSpacing;
+    contentWidth = _numberOfItems * _elementWidth + (_numberOfItems + 1) * _elementSpacing;
   }
   
   [self setContentSize:CGSizeMake(contentWidth, self.frame.size.height)];
@@ -250,22 +250,20 @@
       }
       
       _ignoreScroll = NO;
+    } else {
+      _timerAnimation = YES;
     }
     
     [UIView animateWithDuration:ANIMATION_DURATION
                           delay:0
                         options:UIViewAnimationOptionCurveLinear |
-                                UIViewAnimationOptionAllowUserInteraction |
-                                UIViewAnimationOptionBeginFromCurrentState
-                     animations:^{                       
+     UIViewAnimationOptionAllowUserInteraction
+                     animations:^{
                        CGPoint currentOffset = self.contentOffset;
                        currentOffset.x += ANIMATION_WIDTH;
                        [self setContentOffset:currentOffset];
                      } completion:^(BOOL finished) {
-                       _timerAnimation = YES;
                      }];
-  } else {
-    _timerAnimation = NO;
   }
 }
 
@@ -312,9 +310,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-  _stopAnimation = NO;
+  _ignoreScroll = NO;
+  
   [self scrollViewDidScroll:self];
-  _stopAnimation = YES;
 }
 
 
@@ -392,13 +390,13 @@
       CGRect lastObject = CGRectMake(objectX, objectY, _elementWidth, self.frame.size.height);
       
       [self scrollRectToVisible:lastObject animated:YES];
-
+      
       // Or in the left side
     } else if (!_infiniteScroll && sender.view.tag + 1 - reqNumberOfElements <= 0) {
       NSInteger remainingElementsLeft = sender.view.tag;
       NSInteger remainingSizeLeft = remainingElementsLeft * _elementWidth +
       _elementWidth / 2 + _elementSpacing * (remainingElementsLeft + 1);
-
+      
       NSInteger objectX = CGRectGetMidX(sender.view.frame) - remainingSizeLeft;
       NSInteger objectY = 0;
       
@@ -433,7 +431,7 @@
   
   if (!_selectionView) {
     self.selectionView = [[UIView alloc] initWithFrame:
-                         CGRectMake(0, startY, view.frame.size.width, 3)];
+                          CGRectMake(0, startY, view.frame.size.width, 3)];
     [_selectionView setBackgroundColor:[UIColor redColor]];
   } else {
     [_selectionView removeFromSuperview];
@@ -557,7 +555,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)computeViewsFromMinX:(CGFloat)minX toMaxX:(CGFloat)maxX
-{  
+{
   // Add the first element [initial case]
   if ([_visibleViewsArray count] == 0) {
     [self addViewOnRight:minX];
