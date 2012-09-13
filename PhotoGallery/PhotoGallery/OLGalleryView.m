@@ -11,6 +11,9 @@
 
 #define INIT_ELEMENT_WIDTH 266
 
+#define ANIMATION_DURATION 2
+#define ANIMATION_WIDTH 200
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,6 +41,8 @@
 
 @property BOOL elementsFit;
 @property BOOL stopAnimation;
+@property BOOL ignoreScroll;
+@property BOOL timerAnimation;
 
 @end
 
@@ -76,6 +81,8 @@
 {
   if (propertiesArray) {
     _stopAnimation = NO;
+    _ignoreScroll = NO;
+    _timerAnimation = NO;
     _centerSelectedElement = NO;
     _infiniteScroll = NO;
     _animateGalleryMovement = NO;
@@ -129,6 +136,7 @@
   
   if (_infiniteScroll && _animateGalleryMovement) {
     [self startMovement];
+    [self animateMovement:self];
   }
 }
 
@@ -214,7 +222,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)startMovement
 {
-  [NSTimer scheduledTimerWithTimeInterval:0.1
+  [NSTimer scheduledTimerWithTimeInterval:ANIMATION_DURATION
                                    target:self
                                  selector:@selector(animateMovement:)
                                  userInfo:nil
@@ -226,21 +234,38 @@
 - (void)animateMovement:(id)sender
 {
   if (!_stopAnimation) {
-    [UIView animateWithDuration:0.1
+    if (_timerAnimation) {
+      _ignoreScroll = YES;
+      
+      CGPoint currentOffset = self.contentOffset;
+      CGFloat contentWidth = self.contentSize.width;
+      CGFloat centerOffsetX = (contentWidth - self.bounds.size.width) / 2.0;
+      
+      self.contentOffset = CGPointMake(centerOffsetX, currentOffset.y);
+      // move content by the same amount so it appears to stay still
+      for (UIView *view in _visibleViewsArray) {
+        CGPoint center = [_scrollHolder convertPoint:view.center toView:self];
+        center.x += (centerOffsetX - currentOffset.x);
+        view.center = [self convertPoint:center toView:_scrollHolder];
+      }
+      
+      _ignoreScroll = NO;
+    }
+    
+    [UIView animateWithDuration:ANIMATION_DURATION
                           delay:0
                         options:UIViewAnimationOptionCurveLinear |
                                 UIViewAnimationOptionAllowUserInteraction |
                                 UIViewAnimationOptionBeginFromCurrentState
                      animations:^{                       
-                       for (UIView *view in _visibleViewsArray) {
-                         CGRect frame = view.frame;
-                         frame.origin.x -= 10;
-                         [view setFrame:frame];
-                       }
+                       CGPoint currentOffset = self.contentOffset;
+                       currentOffset.x += ANIMATION_WIDTH;
+                       [self setContentOffset:currentOffset];
                      } completion:^(BOOL finished) {
-                       [self layoutSubviews];
-                       [self scrollViewDidScroll:self];
+                       _timerAnimation = YES;
                      }];
+  } else {
+    _timerAnimation = NO;
   }
 }
 
@@ -253,8 +278,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
+  if (_stopAnimation) {
+    _ignoreScroll = YES;
+  }
+  
   if (_autoSelectElement) {
-    if (!_stopAnimation) {
+    if (!_ignoreScroll) {
       CGFloat centerX = self.center.x;
       CGFloat minDifference = 10000;
       UIView *minView;
@@ -564,7 +593,7 @@
   
   // Remove hidden elements from the right edge
   lastView = [_visibleViewsArray lastObject];
-  while (lastView.frame.origin.x > maxX) {
+  while (lastView.frame.origin.x > maxX + ANIMATION_WIDTH) {
     [lastView removeFromSuperview];
     [_visibleViewsArray removeLastObject];
     lastView = [_visibleViewsArray lastObject];
@@ -574,7 +603,7 @@
   
   // Remove hidden elements from the left side
   firstView = [_visibleViewsArray objectAtIndex:0];
-  while (CGRectGetMaxX([firstView frame]) < minX) {
+  while (CGRectGetMaxX([firstView frame]) < minX - ANIMATION_WIDTH) {
     [firstView removeFromSuperview];
     [_visibleViewsArray removeObjectAtIndex:0];
     firstView = [_visibleViewsArray objectAtIndex:0];
