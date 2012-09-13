@@ -170,7 +170,7 @@
 - (void)layoutSubviews
 {
   if (_numberOfItems != 0) {
-    if (_infiniteScroll) {
+    if (_infiniteScroll && _stopAnimation) {
       [self checkAndRecenterElements];
     }
     
@@ -230,16 +230,16 @@
                           delay:0
                         options:UIViewAnimationOptionCurveLinear |
                                 UIViewAnimationOptionAllowUserInteraction |
-                                UIViewAnimationOptionBeginFromCurrentState |
-                                UIViewAnimationOptionOverrideInheritedDuration |
-                                UIViewAnimationOptionOverrideInheritedCurve
-                     animations:^{
-                       CGPoint currentOffset = self.contentOffset;
-                       currentOffset.x += 5;
-                       
-                       [self setContentOffset:currentOffset];
+                                UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{                       
+                       for (UIView *view in _visibleViewsArray) {
+                         CGRect frame = view.frame;
+                         frame.origin.x -= 10;
+                         [view setFrame:frame];
+                       }
                      } completion:^(BOOL finished) {
-                       
+                       [self layoutSubviews];
+                       [self scrollViewDidScroll:self];
                      }];
   }
 }
@@ -277,6 +277,15 @@
       }
     }
   }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+  _stopAnimation = NO;
+  [self scrollViewDidScroll:self];
+  _stopAnimation = YES;
 }
 
 
@@ -431,23 +440,13 @@
   CGFloat distanceFromCenter = fabs(currentOffset.x - centerOffsetX);
   
   if (distanceFromCenter > (contentWidth / 4.0)) {
-    [UIView animateWithDuration:0
-                          delay:0
-                        options:UIViewAnimationOptionTransitionNone |
-                                UIViewAnimationOptionOverrideInheritedDuration |
-                                UIViewAnimationOptionOverrideInheritedCurve |
-                                UIViewAnimationOptionBeginFromCurrentState
-                     animations:^{
-                       self.contentOffset = CGPointMake(centerOffsetX, currentOffset.y);
-                       // move content by the same amount so it appears to stay still
-                       for (UIView *view in _visibleViewsArray) {
-                         CGPoint center = [_scrollHolder convertPoint:view.center toView:self];
-                         center.x += (centerOffsetX - currentOffset.x);
-                         view.center = [self convertPoint:center toView:_scrollHolder];
-                       }
-                     } completion:^(BOOL finished) {
-                       
-                     }];
+    self.contentOffset = CGPointMake(centerOffsetX, currentOffset.y);
+    // move content by the same amount so it appears to stay still
+    for (UIView *view in _visibleViewsArray) {
+      CGPoint center = [_scrollHolder convertPoint:view.center toView:self];
+      center.x += (centerOffsetX - currentOffset.x);
+      view.center = [self convertPoint:center toView:_scrollHolder];
+    }
   }
 }
 
