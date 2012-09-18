@@ -6,6 +6,14 @@
          contextName = "-[OLViewController buttonPressed:]:OLViewController.m">
       </ContextState>
       <ContextState
+         contextName = "-[OLGalleryView assignProperties:]:OLGalleryView.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "_showSelectedElement">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "-[OLGalleryView computeViewsFromMinX:toMaxX:]:OLGalleryView.m">
          <PersistentStrings>
             <PersistentString

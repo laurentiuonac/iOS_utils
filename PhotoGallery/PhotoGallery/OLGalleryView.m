@@ -42,7 +42,8 @@
 @property BOOL elementsFit;
 @property BOOL stopAnimation;
 @property BOOL ignoreScroll;
-@property BOOL timerAnimation;
+@property BOOL fromUserScroll;
+@property BOOL elementSelectionAfterDragging;
 
 @end
 
@@ -59,14 +60,21 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+- (id)initWithFrame:(CGRect)frame andDelegate:(id<OLGalleryDelegate>)galleryDelegate
+{
+  return [self initWithFrame:frame andDelegate:galleryDelegate withOptions:OLGNormalBehaviour];
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 - (id)initWithFrame:(CGRect)frame
         andDelegate:(id<OLGalleryDelegate>)galleryDelegate
-     withProperties:(NSArray *)propertiesArray
+        withOptions:(enum OLGalleryOption)options
 {
   self = [super initWithFrame:frame];
   
   if (self) {
-    [self assignProperties:propertiesArray];
+    [self assignProperties:options];
     [self setGalleryDelegate:galleryDelegate];
     [self loadElementData];
     [self setupScrollView];
@@ -77,36 +85,42 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-- (void)assignProperties:(NSArray *)propertiesArray
+- (void)assignProperties:(enum OLGalleryOption)options
 {
-  if (propertiesArray) {
-    _stopAnimation = NO;
-    _ignoreScroll = NO;
-    _timerAnimation = YES;
-    _centerSelectedElement = NO;
-    _infiniteScroll = NO;
-    _animateGalleryMovement = NO;
-    _showSelectedElement = NO;
-    _autoSelectElement = NO;
-    
-    if ([propertiesArray indexOfObject:@"centerSelectedElement"] != NSNotFound) {
-      _centerSelectedElement = YES;
+  _fromUserScroll = NO;
+  _stopAnimation = NO;
+  _ignoreScroll = NO;
+  
+  _centerSelectedElement = YES;
+  _infiniteScroll = YES;
+  _animateGalleryMovement = YES;
+  _showSelectedElement = YES;
+  _autoSelectElement = YES;
+  _elementSelectionAfterDragging = YES;
+  
+  if (options != OLGNormalBehaviour) {
+    if ((options & OLGDisableCenteringOfSelectedElement) == OLGDisableCenteringOfSelectedElement) {
+      _centerSelectedElement = NO;
     }
     
-    if ([propertiesArray indexOfObject:@"infiniteScroll"] != NSNotFound) {
-      _infiniteScroll = YES;
+    if ((options & OLGDisableInfiniteScroll) == OLGDisableInfiniteScroll) {
+      _infiniteScroll = NO;
     }
     
-    if ([propertiesArray indexOfObject:@"animateGalleryMovement"] != NSNotFound) {
-      _animateGalleryMovement = YES;
+    if ((options & OLGDisableGalleryMovementAnimation) == OLGDisableGalleryMovementAnimation) {
+      _animateGalleryMovement = NO;
     }
     
-    if ([propertiesArray indexOfObject:@"showSelectedElement"] != NSNotFound) {
-      _showSelectedElement = YES;
+    if ((options & OLGDisableSelectedElementView) == OLGDisableSelectedElementView) {
+      _showSelectedElement = NO;
     }
     
-    if ([propertiesArray indexOfObject:@"autoSelectElement"] != NSNotFound) {
-      _autoSelectElement = YES;
+    if ((options & OLGDisableAutoSelectElement) == OLGDisableAutoSelectElement) {
+      _autoSelectElement = NO;
+    }
+    
+    if ((options & OLGDisableSelectionAfterDragging) == OLGDisableSelectionAfterDragging) {
+      _elementSelectionAfterDragging = NO;
     }
   }
 }
@@ -234,25 +248,21 @@
 - (void)animateMovement:(id)sender
 {
   if (!_stopAnimation) {
-    if (_timerAnimation) {
-      _ignoreScroll = YES;
-      
-      CGPoint currentOffset = self.contentOffset;
-      CGFloat contentWidth = self.contentSize.width;
-      CGFloat centerOffsetX = (contentWidth - self.bounds.size.width) / 2.0;
-      
-      self.contentOffset = CGPointMake(centerOffsetX, currentOffset.y);
-      // move content by the same amount so it appears to stay still
-      for (UIView *view in _visibleViewsArray) {
-        CGPoint center = [_scrollHolder convertPoint:view.center toView:self];
-        center.x += (centerOffsetX - currentOffset.x);
-        view.center = [self convertPoint:center toView:_scrollHolder];
-      }
-      
-      _ignoreScroll = NO;
-    } else {
-      _timerAnimation = YES;
+    _ignoreScroll = YES;
+    
+    CGPoint currentOffset = self.contentOffset;
+    CGFloat contentWidth = self.contentSize.width;
+    CGFloat centerOffsetX = (contentWidth - self.bounds.size.width) / 2.0;
+    
+    self.contentOffset = CGPointMake(centerOffsetX, currentOffset.y);
+    // move content by the same amount so it appears to stay still
+    for (UIView *view in _visibleViewsArray) {
+      CGPoint center = [_scrollHolder convertPoint:view.center toView:self];
+      center.x += (centerOffsetX - currentOffset.x);
+      view.center = [self convertPoint:center toView:_scrollHolder];
     }
+    
+    _ignoreScroll = NO;
     
     [UIView animateWithDuration:ANIMATION_DURATION
                           delay:0
@@ -276,12 +286,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-  if (_stopAnimation) {
-    _ignoreScroll = YES;
-  }
-  
-  if (_autoSelectElement) {
-    if (!_ignoreScroll) {
+  if ((!_ignoreScroll && !_stopAnimation) || (_fromUserScroll)) {
+    if (_autoSelectElement) {
       CGFloat centerX = self.center.x;
       CGFloat minDifference = 10000;
       UIView *minView;
@@ -303,6 +309,10 @@
         }
       }
     }
+    
+    if (_fromUserScroll) {
+      _fromUserScroll = NO;
+    }
   }
 }
 
@@ -310,9 +320,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-  _ignoreScroll = NO;
-  
-  [self scrollViewDidScroll:self];
+  if (_elementSelectionAfterDragging) {
+    _fromUserScroll = YES;
+    
+    [self scrollViewDidScroll:self];
+  }
 }
 
 
@@ -369,9 +381,7 @@
     [self startResetAnimationTimeoutTimer];
   }
   
-  if (_showSelectedElement) {
-    [self markAndNotifyDelegateAboutSelectedElement:sender.view];
-  }
+  [self markAndNotifyDelegateAboutSelectedElement:sender.view];
   
   // Center selected element
   if (_centerSelectedElement) {
@@ -429,15 +439,17 @@
   
   NSInteger startY = view.frame.size.height - 3;
   
-  if (!_selectionView) {
-    self.selectionView = [[UIView alloc] initWithFrame:
-                          CGRectMake(0, startY, view.frame.size.width, 3)];
-    [_selectionView setBackgroundColor:[UIColor redColor]];
-  } else {
-    [_selectionView removeFromSuperview];
+  if (_showSelectedElement) {
+    if (!_selectionView) {
+      self.selectionView = [[UIView alloc] initWithFrame:
+                            CGRectMake(0, startY, view.frame.size.width, 3)];
+      [_selectionView setBackgroundColor:[UIColor redColor]];
+    } else {
+      [_selectionView removeFromSuperview];
+    }
+    
+    [view addSubview:_selectionView];
   }
-  
-  [view addSubview:_selectionView];
 }
 
 

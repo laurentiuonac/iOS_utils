@@ -37,9 +37,7 @@
   OLGalleryView *galleryView =
   [[OLGalleryView alloc]
    initWithFrame:CGRectMake(0, 100, self.view.frame.size.width, 150)
-   andDelegate:self
-   withProperties:@[@"centerSelectedElement", @"infiniteScroll",
-   @"animateGalleryMovement", @"showSelectedElement", @"autoSelectElement"]];
+   andDelegate:self withOptions:OLGDisableSelectionAfterDragging];
   [self.view addSubview:galleryView];
 }
 
@@ -48,7 +46,6 @@
 - (void)viewDidUnload
 {
   [super viewDidUnload];
-  // Release any retained subviews of the main view.
 }
 
 

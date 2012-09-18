@@ -8,6 +8,20 @@
 
 #import <UIKit/UIKit.h>
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+enum OLGalleryOption {
+  OLGNormalBehaviour = 0,
+  OLGDisableCenteringOfSelectedElement = 1,
+  OLGDisableInfiniteScroll = 2,
+  OLGDisableGalleryMovementAnimation = 4,
+  OLGDisableSelectedElementView = 8,
+  OLGDisableAutoSelectElement = 16,
+  OLGDisableSelectionAfterDragging = 32
+};
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 @protocol OLGalleryDelegate;
 
 
@@ -17,11 +31,16 @@
 @property (nonatomic, assign) id<OLGalleryDelegate> galleryDelegate;
 
 /*
- * Init the gallery and set its delegate and properties.
+ * Init the gallery and set its delegate.
+ */
+- (id)initWithFrame:(CGRect)frame andDelegate:(id<OLGalleryDelegate>)galleryDelegate;
+
+/*
+ * Init the gallery and set its delegate and options.
  */
 - (id)initWithFrame:(CGRect)frame
         andDelegate:(id<OLGalleryDelegate>)galleryDelegate
-     withProperties:(NSArray *)propertiesArray;
+        withOptions:(enum OLGalleryOption)options;
 
 @end
 
@@ -59,7 +78,6 @@
  * Gives the index of the selected element.
  */
 - (void)galleryView:(OLGalleryView *)galleryView selectedItemAtIndex:(NSInteger)index;
-
 
 
 @end
