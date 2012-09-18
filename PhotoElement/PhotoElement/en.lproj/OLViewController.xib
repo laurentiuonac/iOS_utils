@@ -34,7 +34,7 @@
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">274</int>
 				<array class="NSMutableArray" key="NSSubviews">
-					<object class="IBUIView" id="582740891">
+					<object class="IBUIView" id="495977321">
 						<reference key="NSNextResponder" ref="774585933"/>
 						<int key="NSvFlags">274</int>
 						<string key="NSFrame">{{27, 155}, {266, 150}}</string>
@@ -77,7 +77,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">elementContainer</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="582740891"/>
+						<reference key="destination" ref="495977321"/>
 					</object>
 					<int key="connectionID">9</int>
 				</object>
@@ -105,13 +105,13 @@
 						<int key="objectID">6</int>
 						<reference key="object" ref="774585933"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="582740891"/>
+							<reference ref="495977321"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">8</int>
-						<reference key="object" ref="582740891"/>
+						<reference key="object" ref="495977321"/>
 						<reference key="parent" ref="774585933"/>
 					</object>
 				</array>

@@ -16,8 +16,8 @@
 		CC4912941608868D00A22A12 /* OLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CC4912931608868D00A22A12 /* OLViewController.m */; };
 		CC4912971608868D00A22A12 /* OLViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = CC4912951608868D00A22A12 /* OLViewController.xib */; };
 		CC4912A4160886D500A22A12 /* OLPhotoElementView.m in Sources */ = {isa = PBXBuildFile; fileRef = CC4912A3160886D500A22A12 /* OLPhotoElementView.m */; };
-		CC4912A91608921700A22A12 /* 1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CC4912A71608921700A22A12 /* 1.jpg */; };
-		CC4912AA1608921700A22A12 /* 2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CC4912A81608921700A22A12 /* 2.jpg */; };
+		CC4912B51608981200A22A12 /* 1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CC4912B31608981200A22A12 /* 1.jpg */; };
+		CC4912B61608981200A22A12 /* 2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CC4912B41608981200A22A12 /* 2.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,8 +36,8 @@
 		CC4912961608868D00A22A12 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/OLViewController.xib; sourceTree = "<group>"; };
 		CC4912A2160886D500A22A12 /* OLPhotoElementView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OLPhotoElementView.h; sourceTree = "<group>"; };
 		CC4912A3160886D500A22A12 /* OLPhotoElementView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OLPhotoElementView.m; sourceTree = "<group>"; };
-		CC4912A71608921700A22A12 /* 1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 1.jpg; sourceTree = "<group>"; };
-		CC4912A81608921700A22A12 /* 2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 2.jpg; sourceTree = "<group>"; };
+		CC4912B31608981200A22A12 /* 1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = 1.jpg; path = PhotoElement/Resources/Images/1.jpg; sourceTree = SOURCE_ROOT; };
+		CC4912B41608981200A22A12 /* 2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = 2.jpg; path = PhotoElement/Resources/Images/2.jpg; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,8 +151,8 @@
 		CC4912A61608921700A22A12 /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				CC4912A71608921700A22A12 /* 1.jpg */,
-				CC4912A81608921700A22A12 /* 2.jpg */,
+				CC4912B31608981200A22A12 /* 1.jpg */,
+				CC4912B41608981200A22A12 /* 2.jpg */,
 			);
 			path = Images;
 			sourceTree = "<group>";
@@ -211,8 +211,8 @@
 			files = (
 				CC49128B1608868D00A22A12 /* InfoPlist.strings in Resources */,
 				CC4912971608868D00A22A12 /* OLViewController.xib in Resources */,
-				CC4912A91608921700A22A12 /* 1.jpg in Resources */,
-				CC4912AA1608921700A22A12 /* 2.jpg in Resources */,
+				CC4912B51608981200A22A12 /* 1.jpg in Resources */,
+				CC4912B61608981200A22A12 /* 2.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
