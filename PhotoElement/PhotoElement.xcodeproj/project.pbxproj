@@ -1,0 +1,349 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		CC4912811608868D00A22A12 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC4912801608868D00A22A12 /* UIKit.framework */; };
+		CC4912831608868D00A22A12 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC4912821608868D00A22A12 /* Foundation.framework */; };
+		CC4912851608868D00A22A12 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC4912841608868D00A22A12 /* CoreGraphics.framework */; };
+		CC49128B1608868D00A22A12 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = CC4912891608868D00A22A12 /* InfoPlist.strings */; };
+		CC49128D1608868D00A22A12 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CC49128C1608868D00A22A12 /* main.m */; };
+		CC4912911608868D00A22A12 /* OLAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CC4912901608868D00A22A12 /* OLAppDelegate.m */; };
+		CC4912941608868D00A22A12 /* OLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CC4912931608868D00A22A12 /* OLViewController.m */; };
+		CC4912971608868D00A22A12 /* OLViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = CC4912951608868D00A22A12 /* OLViewController.xib */; };
+		CC4912A4160886D500A22A12 /* OLPhotoElementView.m in Sources */ = {isa = PBXBuildFile; fileRef = CC4912A3160886D500A22A12 /* OLPhotoElementView.m */; };
+		CC4912A91608921700A22A12 /* 1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CC4912A71608921700A22A12 /* 1.jpg */; };
+		CC4912AA1608921700A22A12 /* 2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CC4912A81608921700A22A12 /* 2.jpg */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		CC49127C1608868D00A22A12 /* PhotoElement.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoElement.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC4912801608868D00A22A12 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		CC4912821608868D00A22A12 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		CC4912841608868D00A22A12 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		CC4912881608868D00A22A12 /* PhotoElement-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PhotoElement-Info.plist"; sourceTree = "<group>"; };
+		CC49128A1608868D00A22A12 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		CC49128C1608868D00A22A12 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		CC49128E1608868D00A22A12 /* PhotoElement-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PhotoElement-Prefix.pch"; sourceTree = "<group>"; };
+		CC49128F1608868D00A22A12 /* OLAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OLAppDelegate.h; sourceTree = "<group>"; };
+		CC4912901608868D00A22A12 /* OLAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OLAppDelegate.m; sourceTree = "<group>"; };
+		CC4912921608868D00A22A12 /* OLViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OLViewController.h; sourceTree = "<group>"; };
+		CC4912931608868D00A22A12 /* OLViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OLViewController.m; sourceTree = "<group>"; };
+		CC4912961608868D00A22A12 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/OLViewController.xib; sourceTree = "<group>"; };
+		CC4912A2160886D500A22A12 /* OLPhotoElementView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OLPhotoElementView.h; sourceTree = "<group>"; };
+		CC4912A3160886D500A22A12 /* OLPhotoElementView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OLPhotoElementView.m; sourceTree = "<group>"; };
+		CC4912A71608921700A22A12 /* 1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 1.jpg; sourceTree = "<group>"; };
+		CC4912A81608921700A22A12 /* 2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 2.jpg; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		CC4912791608868D00A22A12 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CC4912811608868D00A22A12 /* UIKit.framework in Frameworks */,
+				CC4912831608868D00A22A12 /* Foundation.framework in Frameworks */,
+				CC4912851608868D00A22A12 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		CC4912711608868D00A22A12 = {
+			isa = PBXGroup;
+			children = (
+				CC4912861608868D00A22A12 /* PhotoElement */,
+				CC49127F1608868D00A22A12 /* Frameworks */,
+				CC49127D1608868D00A22A12 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		CC49127D1608868D00A22A12 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CC49127C1608868D00A22A12 /* PhotoElement.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CC49127F1608868D00A22A12 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CC4912801608868D00A22A12 /* UIKit.framework */,
+				CC4912821608868D00A22A12 /* Foundation.framework */,
+				CC4912841608868D00A22A12 /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CC4912861608868D00A22A12 /* PhotoElement */ = {
+			isa = PBXGroup;
+			children = (
+				CC49129D1608869400A22A12 /* Classes */,
+				CC49129F160886A800A22A12 /* Resources */,
+				CC4912871608868D00A22A12 /* Supporting Files */,
+			);
+			path = PhotoElement;
+			sourceTree = "<group>";
+		};
+		CC4912871608868D00A22A12 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				CC4912881608868D00A22A12 /* PhotoElement-Info.plist */,
+				CC4912891608868D00A22A12 /* InfoPlist.strings */,
+				CC49128C1608868D00A22A12 /* main.m */,
+				CC49128E1608868D00A22A12 /* PhotoElement-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		CC49129D1608869400A22A12 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				CC4912A1160886B900A22A12 /* Element */,
+				CC49129E1608869A00A22A12 /* ViewControllers */,
+				CC49128F1608868D00A22A12 /* OLAppDelegate.h */,
+				CC4912901608868D00A22A12 /* OLAppDelegate.m */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		CC49129E1608869A00A22A12 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				CC4912921608868D00A22A12 /* OLViewController.h */,
+				CC4912931608868D00A22A12 /* OLViewController.m */,
+			);
+			name = ViewControllers;
+			sourceTree = "<group>";
+		};
+		CC49129F160886A800A22A12 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				CC4912A61608921700A22A12 /* Images */,
+				CC4912A0160886AD00A22A12 /* Xib */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		CC4912A0160886AD00A22A12 /* Xib */ = {
+			isa = PBXGroup;
+			children = (
+				CC4912951608868D00A22A12 /* OLViewController.xib */,
+			);
+			name = Xib;
+			sourceTree = "<group>";
+		};
+		CC4912A1160886B900A22A12 /* Element */ = {
+			isa = PBXGroup;
+			children = (
+				CC4912A2160886D500A22A12 /* OLPhotoElementView.h */,
+				CC4912A3160886D500A22A12 /* OLPhotoElementView.m */,
+			);
+			name = Element;
+			sourceTree = "<group>";
+		};
+		CC4912A61608921700A22A12 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				CC4912A71608921700A22A12 /* 1.jpg */,
+				CC4912A81608921700A22A12 /* 2.jpg */,
+			);
+			path = Images;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CC49127B1608868D00A22A12 /* PhotoElement */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CC49129A1608868D00A22A12 /* Build configuration list for PBXNativeTarget "PhotoElement" */;
+			buildPhases = (
+				CC4912781608868D00A22A12 /* Sources */,
+				CC4912791608868D00A22A12 /* Frameworks */,
+				CC49127A1608868D00A22A12 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PhotoElement;
+			productName = PhotoElement;
+			productReference = CC49127C1608868D00A22A12 /* PhotoElement.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CC4912731608868D00A22A12 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = OL;
+				LastUpgradeCheck = 0440;
+				ORGANIZATIONNAME = Laurentiu;
+			};
+			buildConfigurationList = CC4912761608868D00A22A12 /* Build configuration list for PBXProject "PhotoElement" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = CC4912711608868D00A22A12;
+			productRefGroup = CC49127D1608868D00A22A12 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CC49127B1608868D00A22A12 /* PhotoElement */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		CC49127A1608868D00A22A12 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CC49128B1608868D00A22A12 /* InfoPlist.strings in Resources */,
+				CC4912971608868D00A22A12 /* OLViewController.xib in Resources */,
+				CC4912A91608921700A22A12 /* 1.jpg in Resources */,
+				CC4912AA1608921700A22A12 /* 2.jpg in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CC4912781608868D00A22A12 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CC49128D1608868D00A22A12 /* main.m in Sources */,
+				CC4912911608868D00A22A12 /* OLAppDelegate.m in Sources */,
+				CC4912941608868D00A22A12 /* OLViewController.m in Sources */,
+				CC4912A4160886D500A22A12 /* OLPhotoElementView.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		CC4912891608868D00A22A12 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CC49128A1608868D00A22A12 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		CC4912951608868D00A22A12 /* OLViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CC4912961608868D00A22A12 /* en */,
+			);
+			name = OLViewController.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		CC4912981608868D00A22A12 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		CC4912991608868D00A22A12 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		CC49129B1608868D00A22A12 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PhotoElement/PhotoElement-Prefix.pch";
+				INFOPLIST_FILE = "PhotoElement/PhotoElement-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		CC49129C1608868D00A22A12 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PhotoElement/PhotoElement-Prefix.pch";
+				INFOPLIST_FILE = "PhotoElement/PhotoElement-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CC4912761608868D00A22A12 /* Build configuration list for PBXProject "PhotoElement" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CC4912981608868D00A22A12 /* Debug */,
+				CC4912991608868D00A22A12 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CC49129A1608868D00A22A12 /* Build configuration list for PBXNativeTarget "PhotoElement" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CC49129B1608868D00A22A12 /* Debug */,
+				CC49129C1608868D00A22A12 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = CC4912731608868D00A22A12 /* Project object */;
+}
