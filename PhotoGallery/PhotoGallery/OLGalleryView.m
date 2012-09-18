@@ -400,9 +400,9 @@
       NSInteger objectX = CGRectGetMidX(sender.view.frame) - remainingSizeLeft;
       NSInteger objectY = 0;
       
-      CGRect lastObject = CGRectMake(objectX, objectY, _elementWidth, self.frame.size.height);
+      CGRect firstObject = CGRectMake(objectX, objectY, _elementWidth, self.frame.size.height);
       
-      [self scrollRectToVisible:lastObject animated:YES];
+      [self scrollRectToVisible:firstObject animated:YES];
       
       // Or perform the regular centering
     } else {
