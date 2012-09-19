@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Laurentiu. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import "OLGalleryView.h"
 #import "OLConstants.h"
 
@@ -387,6 +388,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+  [self.layer removeAllAnimations];
   [self startResetAnimationTimeoutTimer];
 }
 
@@ -402,7 +404,7 @@
     self.animationTimeoutTimer = nil;
   }
   
-  self.animationTimeoutTimer = [NSTimer scheduledTimerWithTimeInterval:10
+  self.animationTimeoutTimer = [NSTimer scheduledTimerWithTimeInterval:3
                                                                 target:self
                                                               selector:@selector(enableAnimation:)
                                                               userInfo:nil
@@ -434,6 +436,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)didTap:(UIGestureRecognizer *)sender
 {
+  [self.layer removeAllAnimations];
+  
   if (_animateGalleryMovement) {
     [self startResetAnimationTimeoutTimer];
   }
