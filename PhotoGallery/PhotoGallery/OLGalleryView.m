@@ -48,6 +48,7 @@
 @property BOOL ignoreScroll;
 @property BOOL fromUserScroll;
 @property BOOL fromTapScroll;
+@property BOOL fromAnimationScroll;
 
 @end
 
@@ -93,6 +94,7 @@
 {
   _fromTapScroll = NO;
   _fromUserScroll = NO;
+  _fromAnimationScroll = NO;
   _stopAnimation = NO;
   _ignoreScroll = NO;
   
@@ -216,6 +218,36 @@
     if (_elementsFit) {
       [self centerElementsAndDisableScrolling];
     }
+    
+    // Check if the middle element should be selected automatically
+    if ((!_ignoreScroll && !_stopAnimation) || (_fromUserScroll)) {
+      if (_autoSelectElement) {
+        CGFloat centerX = self.center.x;
+        CGFloat minDifference = 10000;
+        UIView *minView;
+        CGFloat currDifference = 0;
+        
+        for (UIView *view in _visibleViewsArray) {
+          CGRect toCompare = [self convertRect:view.frame toView:self.superview];
+          currDifference = abs(CGRectGetMidX(toCompare) - centerX);
+          
+          if (minDifference > currDifference) {
+            minDifference = currDifference;
+            minView = view;
+          } else {
+            if (_selectedView != minView) {
+              [self markAndNotifyDelegateAboutSelectedElement:minView];
+            }
+            
+            break;
+          }
+        }
+      }
+      
+      if (_fromUserScroll) {
+        _fromUserScroll = NO;
+      }
+    }
   }
 }
 
@@ -295,6 +327,7 @@
 {
   if (!_stopAnimation) {
     _ignoreScroll = YES;
+    _fromAnimationScroll = YES;
     
     CGPoint currentOffset = self.contentOffset;
     CGFloat contentWidth = self.contentSize.width;
@@ -330,49 +363,13 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-  if ((!_ignoreScroll && !_stopAnimation) || (_fromUserScroll)) {
-    if (_autoSelectElement) {
-      CGFloat centerX = self.center.x;
-      CGFloat minDifference = 10000;
-      UIView *minView;
-      CGFloat currDifference = 0;
-      
-      for (UIView *view in _visibleViewsArray) {
-        CGRect toCompare = [self convertRect:view.frame toView:self.superview];
-        currDifference = abs(CGRectGetMidX(toCompare) - centerX);
-        
-        if (minDifference > currDifference) {
-          minDifference = currDifference;
-          minView = view;
-        } else {
-          if (_selectedView != minView) {
-            [self markAndNotifyDelegateAboutSelectedElement:minView];
-          }
-          
-          break;
-        }
-      }
-    }
-    
-    if (_fromUserScroll) {
-      _fromUserScroll = NO;
-    }
-  }
-}
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
   if (_elementSelectionAfterDragging) {
     _fromUserScroll = YES;
     
-    [self scrollViewDidScroll:self];
+    [self layoutSubviews];
   }
-  
-
 }
 
 
@@ -388,6 +385,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+  _fromAnimationScroll = NO;
+  
   [self.layer removeAllAnimations];
   [self startResetAnimationTimeoutTimer];
 }
@@ -404,7 +403,7 @@
     self.animationTimeoutTimer = nil;
   }
   
-  self.animationTimeoutTimer = [NSTimer scheduledTimerWithTimeInterval:3
+  self.animationTimeoutTimer = [NSTimer scheduledTimerWithTimeInterval:10
                                                                 target:self
                                                               selector:@selector(enableAnimation:)
                                                               userInfo:nil
@@ -436,6 +435,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)didTap:(UIGestureRecognizer *)sender
 {
+  _fromAnimationScroll = NO;
   [self.layer removeAllAnimations];
   
   if (_animateGalleryMovement) {
@@ -494,7 +494,10 @@
 - (void)markAndNotifyDelegateAboutSelectedElement:(UIView *)view
 {
   NSInteger index = view.tag;
-  if (!_animateElementBeforeSelection) {
+  
+  BOOL notifyNow = (!_animateElementBeforeSelection && _fromTapScroll) || _fromAnimationScroll;
+  
+  if (notifyNow) {
     [self notifyDelegateAboutSelection:index];
   }
   
