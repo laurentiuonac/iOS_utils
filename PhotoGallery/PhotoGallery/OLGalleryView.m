@@ -23,6 +23,7 @@
 @property (nonatomic, strong) NSMutableArray *visibleViewsArray;
 @property (nonatomic, strong) UIView *scrollHolder;
 @property (nonatomic, strong) NSTimer *animationTimeoutTimer;
+@property (nonatomic, strong) NSTimer *movementTimer;
 @property (nonatomic, strong) UIView *selectionView;
 @property (nonatomic, strong) UIView *selectedView;
 
@@ -38,12 +39,14 @@
 @property BOOL animateGalleryMovement;
 @property BOOL showSelectedElement;
 @property BOOL autoSelectElement;
+@property BOOL animateElementBeforeSelection;
+@property BOOL elementSelectionAfterDragging;
 
 @property BOOL elementsFit;
 @property BOOL stopAnimation;
 @property BOOL ignoreScroll;
 @property BOOL fromUserScroll;
-@property BOOL elementSelectionAfterDragging;
+@property BOOL fromTapScroll;
 
 @end
 
@@ -87,6 +90,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)assignProperties:(enum OLGalleryOption)options
 {
+  _fromTapScroll = NO;
   _fromUserScroll = NO;
   _stopAnimation = NO;
   _ignoreScroll = NO;
@@ -97,6 +101,7 @@
   _showSelectedElement = YES;
   _autoSelectElement = YES;
   _elementSelectionAfterDragging = YES;
+  _animateElementBeforeSelection = YES;
   
   if (options != OLGNormalBehaviour) {
     if ((options & OLGDisableCenteringOfSelectedElement) == OLGDisableCenteringOfSelectedElement) {
@@ -121,6 +126,10 @@
     
     if ((options & OLGDisableSelectionAfterDragging) == OLGDisableSelectionAfterDragging) {
       _elementSelectionAfterDragging = NO;
+    }
+    
+    if ((options & OLGDisableAnimationBeforeSelection) == OLGDisableAnimationBeforeSelection) {
+      _animateElementBeforeSelection = NO;
     }
   }
 }
@@ -230,17 +239,53 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark - Public methods
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)startAnimating
+{
+  _animateGalleryMovement = YES;
+  
+  if (!_movementTimer) {
+    [self animateMovement:self];
+    [self startMovement];
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)stopAnimating
+{
+  _animateGalleryMovement = NO;
+  
+  if (_movementTimer) {
+    [self stopMovement];
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark - Animation
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)startMovement
 {
-  [NSTimer scheduledTimerWithTimeInterval:ANIMATION_DURATION
-                                   target:self
-                                 selector:@selector(animateMovement:)
-                                 userInfo:nil
-                                  repeats:YES];
+  self.movementTimer = [NSTimer scheduledTimerWithTimeInterval:ANIMATION_DURATION
+                                                        target:self
+                                                      selector:@selector(animateMovement:)
+                                                      userInfo:nil
+                                                       repeats:YES];
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)stopMovement
+{
+  [_movementTimer invalidate];
+  self.movementTimer = nil;
 }
 
 
@@ -325,6 +370,18 @@
     
     [self scrollViewDidScroll:self];
   }
+  
+
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
+{
+  if (_fromTapScroll && _animateElementBeforeSelection) {
+    [self notifyDelegateAboutSelection:_selectedView.tag];
+    _fromTapScroll = NO;
+  }
 }
 
 
@@ -383,6 +440,8 @@
   
   [self markAndNotifyDelegateAboutSelectedElement:sender.view];
   
+  _fromTapScroll = YES;
+  
   // Center selected element
   if (_centerSelectedElement) {
     // Required number of elements to scroll in one direction
@@ -431,7 +490,9 @@
 - (void)markAndNotifyDelegateAboutSelectedElement:(UIView *)view
 {
   NSInteger index = view.tag;
-  [self notifyDelegateAboutSelection:index];
+  if (!_animateElementBeforeSelection) {
+    [self notifyDelegateAboutSelection:index];
+  }
   
   if (_selectedView != view) {
     self.selectedView = view;

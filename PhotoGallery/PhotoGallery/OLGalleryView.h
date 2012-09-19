@@ -17,7 +17,8 @@ enum OLGalleryOption {
   OLGDisableGalleryMovementAnimation = 4,
   OLGDisableSelectedElementView = 8,
   OLGDisableAutoSelectElement = 16,
-  OLGDisableSelectionAfterDragging = 32
+  OLGDisableSelectionAfterDragging = 32,
+  OLGDisableAnimationBeforeSelection = 64
 };
 
 
@@ -31,16 +32,27 @@ enum OLGalleryOption {
 @property (nonatomic, assign) id<OLGalleryDelegate> galleryDelegate;
 
 /*
- * Init the gallery and set its delegate.
+ *  Init the gallery and set its delegate.
  */
 - (id)initWithFrame:(CGRect)frame andDelegate:(id<OLGalleryDelegate>)galleryDelegate;
 
 /*
- * Init the gallery and set its delegate and options.
+ *  Init the gallery and set its delegate and options.
  */
 - (id)initWithFrame:(CGRect)frame
         andDelegate:(id<OLGalleryDelegate>)galleryDelegate
         withOptions:(enum OLGalleryOption)options;
+
+/*
+ *  Start animating the gallery.
+ */
+- (void)startAnimating;
+
+/*
+ *  Stop animating the gallery.
+ */
+- (void)stopAnimating;
+
 
 @end
 
@@ -52,12 +64,12 @@ enum OLGalleryOption {
 @required
 
 /*
- * The view at the given index.
+ *  The view at the given index.
  */
 - (UIView *)galleryView:(OLGalleryView *)galleryView viewForItemAtIndex:(NSInteger)index;
 
 /*
- * Total number of items.
+ *  Total number of items.
  */
 - (NSInteger)numberOfItemsForGalleryView:(OLGalleryView *)galleryView;
 
@@ -65,17 +77,17 @@ enum OLGalleryOption {
 @optional
 
 /*
- * Element spacing.
+ *  Element spacing.
  */
 - (NSInteger)elementSpacingForGalleryView:(OLGalleryView *)galleryView;
 
 /*
- * Element width.
+ *  Element width.
  */
 - (NSInteger)elementWidthForGalleryView:(OLGalleryView *)galleryView;
 
 /*
- * Gives the index of the selected element.
+ *  Gives the index of the selected element.
  */
 - (void)galleryView:(OLGalleryView *)galleryView selectedItemAtIndex:(NSInteger)index;
 
