@@ -39,6 +39,7 @@
   
   self.photoView = [[OLPhotoElementView alloc] initWithFrame:_elementContainer.bounds];
   [_photoView setInitialImage:[UIImage imageNamed:@"1.jpg"]];
+  [_photoView setTitle:@"Title"];
   [_elementContainer addSubview:_photoView];
   
   _counter = 0;

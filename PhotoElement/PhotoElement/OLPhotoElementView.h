@@ -22,4 +22,10 @@
  */
 - (void)changeImage:(UIImage *)image;
 
+/*
+ *  Set the title
+ */
+- (void)setTitle:(NSString *)title;
+
+
 @end

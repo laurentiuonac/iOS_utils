@@ -18,6 +18,9 @@
 @property (nonatomic, strong) UIImageView *imgView2;
 @property (nonatomic, weak) UIImageView *visibleView;
 
+@property (nonatomic, strong) UIView *overlayView;
+@property (nonatomic, strong) UILabel *titleLabel;
+
 @property CGRect outsideFrame;
 @property CGRect minimizedFrame;
 
@@ -71,8 +74,22 @@
   [_imgView2 setContentMode:UIViewContentModeScaleAspectFill];
   [_imgView2 setClipsToBounds:YES];
   
+  CGRect overlayFrame = CGRectMake(0, height - 30, width, 30);
+  self.overlayView = [[UIView alloc] initWithFrame:overlayFrame];
+  [_overlayView setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.5]];
+  
+  CGRect titleFrame = _overlayView.bounds;
+  titleFrame.origin.x += 3;
+  titleFrame.size.width -= 3;
+  self.titleLabel = [[UILabel alloc] initWithFrame:titleFrame];
+  [_titleLabel setBackgroundColor:[UIColor clearColor]];
+  [_titleLabel setTextColor:[UIColor whiteColor]];
+  [_titleLabel setFont:[UIFont boldSystemFontOfSize:14]];
+  [_overlayView addSubview:_titleLabel];
+  
   [self addSubview:_imgView2];
   [self addSubview:_imgView1];
+  [self addSubview:_overlayView];
   
   [self setClipsToBounds:YES];
   [self setVisibleView:_imgView1];
@@ -88,6 +105,13 @@
 - (void)setInitialImage:(UIImage *)image
 {
   [_imgView1 setImage:image];
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)setTitle:(NSString *)title
+{
+  [_titleLabel setText:title];
 }
 
 
@@ -113,6 +137,7 @@
 - (void)hideView:(UIImageView *)toHide andShowView:(UIImageView *)toShow
 {
   [self bringSubviewToFront:toShow];
+  [self bringSubviewToFront:_overlayView];
   
   [UIView animateWithDuration:0.7
                         delay:0
