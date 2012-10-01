@@ -53,6 +53,16 @@ enum OLGalleryOption {
  */
 - (void)stopAnimating;
 
+/*
+ *  Select next element.
+ */
+- (void)selectNextElement;
+
+/*
+ *  Select previous element.
+ */
+- (void)selectPreviousElement;
+
 
 @end
 
