@@ -1,4 +1,4 @@
 iOS_utils
 =========
 
-- here are some libraries that I developed myself
+- a collection of to be developed libraries :D
